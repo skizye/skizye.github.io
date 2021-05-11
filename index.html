@@ -175,6 +175,8 @@ Error message and password prompt
 
 <li>$:/themes/tiddlywiki/vanilla</li>
 
+<li>How To: Set Up SSH</li>
+
 <li>iPad test</li>
 
 <li>New from iPad</li>
@@ -10102,7 +10104,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div list="[[New Tiddler]] GettingStarted" title="$:/StoryList">
+<div list="[[How To: Set Up SSH]] GettingStarted" title="$:/StoryList">
 <pre></pre>
 </div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="$:/themes/tiddlywiki/vanilla" description="Emphasises individual tiddlers" name="Snow White" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/snowwhite" type="application/json" version="5.1.23">
@@ -10213,6 +10215,56 @@ Error message and password prompt
         }
     }
 }</pre>
+</div>
+<div created="20210511021652554" modified="20210511021806616" tags="" title="How To: Set Up SSH">
+<pre>```bash
+## GENERATE KEY ON LOCAL MACHINE ##
+
+# RSA is deprecated; only use if ed25519 unsupported
+ssh-keygen -t rsa -b 4096 -f /home/sphygmus/.ssh/&lt;keyname&gt; -C &quot;user@localmachine&quot;
+
+# Recommended to use everywhere
+# Set a passphrase unless B to B key
+ssh-keygen -t ed25519 -f /home/sphygmus/.ssh/&lt;keyname&gt; -C &quot;user@localmachine&quot;
+
+## ADD PUBLIC KEY TO EXTERNAL SERVICES ##
+
+# Github
+curl -u &quot;redacted&quot; --data '{&quot;title&quot;:&quot;user@localmachine&quot;,&quot;key&quot;:&quot;$(cat ~/.ssh/github.pub)&quot;}' https://api.github.com/user/keys
+
+# DigitalOcean
+cat ~/.ssh/remotes.pub | \
+ssh &lt;user&gt;@&lt;dropletIP&gt; &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys&quot;
+
+# Nearly Free Speech
+cat ~/.ssh/remotes.pub
+# copy, and paste with middle click
+# NFS &gt; login &gt; profile &gt; add ssh key &gt; paste
+
+## ADD KEY TO SSH AGENT ##
+
+# Important: this is a one-time thing
+eval &quot;$(ssh-agent -s)&quot;
+ssh-add ~/.ssh/&lt;keyname&gt;
+```
+For convenience, set up your SSH config file as well. A good example is [[zircon/.ssh/config]].
+
+---
+; If you need to debug an ssh connection:
+* `ssh -v &lt;user&gt;@&lt;server&gt;` or `ssh -v &lt;configShortcut&gt;`
+* verbose shows all steps and will let you see whether or not it's trying your public key, whether permissions are incorrect, and so on.
+
+---
+; If you need to enable/disable password authentication:
+* `sudo nano /etc/ssh/sshd_config`
+* `PasswordAuthentication (yes|no)`
+* `sudo systemctl restart sshd`
+
+---
+; If you're setting up Github, make sure the local git is set up with username &amp; password:
+* `git config --global user.email &quot;redacted&quot;`
+* `git config --global user.name &quot;redacted&quot;`
+* //Do not// use a name &amp; email that you don't want to be public; they will show on command line Github pushes/etc.</pre>
 </div>
 <div author="Me" created="20210310053625242" modified="20210310053714918" tags="Ipad" title="iPad test" type="text/plain">
 <pre>Description of my test.</pre>
