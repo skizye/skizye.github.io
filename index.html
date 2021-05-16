@@ -141,6 +141,8 @@ Error message and password prompt
 
 <p>This <a class="tc-tiddlylink-external" href="https://tiddlywiki.com" rel="noopener noreferrer" target="_blank">TiddlyWiki</a> contains the following tiddlers:</p><p><ul>
 
+<li>$:/config/RelinkOnRename</li>
+
 <li>$:/core</li>
 
 <li>$:/GitHub/Branch</li>
@@ -153,7 +155,13 @@ Error message and password prompt
 
 <li>$:/GitHub/Username</li>
 
+<li>$:/Import</li>
+
 <li>$:/isEncrypted</li>
+
+<li>$:/plugins/slaymaker1907/browser-nativesaver</li>
+
+<li>$:/plugins/slaymaker1907/browser-nativesaver/settings-data</li>
 
 <li>$:/SiteTitle</li>
 
@@ -175,11 +183,13 @@ Error message and password prompt
 
 <li>$:/themes/tiddlywiki/vanilla</li>
 
-<li>How To: Set Up SSH</li>
+<li>HowTo: Set Up SSH</li>
 
 <li>iPad test</li>
 
 <li>New from iPad</li>
+
+<li>New page test with file saver API</li>
 
 <li>New Tiddler</li>
 
@@ -201,6 +211,9 @@ Error message and password prompt
 <!--~~ Ordinary tiddlers ~~-->
 
 <div id="storeArea" style="display:none;">
+<div created="20210516223435012" modified="20210516223435012" title="$:/config/RelinkOnRename">
+<pre>yes</pre>
+</div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="TiddlyWiki5 core" list="readme" name="Core" plugin-priority="0" plugin-type="plugin" title="$:/core" type="application/json" version="5.1.23">
 <pre>{
     &quot;tiddlers&quot;: {
@@ -10080,10 +10093,41 @@ Error message and password prompt
 <div created="20210310044822117" modified="20210310053804065" title="$:/GitHub/Username">
 <pre>skizye@fastmail.fm</pre>
 </div>
+<div status="complete" title="$:/Import">
+<pre>The following tiddlers were imported:
+
+# [[$:/plugins/slaymaker1907/browser-nativesaver]]</pre>
+</div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
 </div>
-<div created="20210310044800315" modified="20210310044800866" title="$:/SiteTitle">
+<div author="Dyllon Gagnier" core-version="&gt;=5.0.8" dependents="" description="TW saver which saves to the file system using the File System Access API." list="" name="HTML Native File System Saver" plugin-type="plugin" source="https://github.com/slaymaker1907/TW5-fsa-saver" title="$:/plugins/slaymaker1907/browser-nativesaver" type="application/json" version="0.3.0">
+<pre>{
+    &quot;tiddlers&quot;: {
+        &quot;$:/plugins/slaymaker1907/browser-nativesaver/saver.js&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/slaymaker1907/browser-nativesaver/saver.js&quot;,
+            &quot;text&quot;: &quot;/*\\\r\ntitle: $:/plugins/slaymaker1907/browser-nativesaver/saver.js\r\ntype: application/javascript\r\nmodule-type: saver\r\n\r\nMain module for saving to a file from a browser. Only Chromium based browsers currently\r\nsupport the necessary APIs.\r\n\r\n\\*/\r\nvar SaverCapability;\r\n(function (SaverCapability) {\r\n    SaverCapability[\&quot;Save\&quot;] = \&quot;save\&quot;;\r\n    SaverCapability[\&quot;AutoSave\&quot;] = \&quot;autosave\&quot;;\r\n    SaverCapability[\&quot;Download\&quot;] = \&quot;download\&quot;;\r\n})(SaverCapability || (SaverCapability = {}));\r\nvar SaverStyle;\r\n(function (SaverStyle) {\r\n    SaverStyle[\&quot;SingleFileVersionBackup\&quot;] = \&quot;single-file-version-backup\&quot;;\r\n    SaverStyle[\&quot;SingleFile\&quot;] = \&quot;single-file\&quot;;\r\n})(SaverStyle || (SaverStyle = {}));\r\nfunction constructEnumPredicate(enumClass) {\r\n    const reverseMapping = {};\r\n    for (const enumVal in enumClass) {\r\n        const enumStr = enumClass[enumVal];\r\n        reverseMapping[enumStr] = true;\r\n    }\r\n    function result(maybeEnum) {\r\n        return !!reverseMapping[maybeEnum];\r\n    }\r\n    return result;\r\n}\r\nconst isSaverStyle = constructEnumPredicate(SaverStyle);\r\nlet problemEncountered = false;\r\nconst PLUGIN_NAME = \&quot;slaymaker1907/browser-nativesaver\&quot;;\r\nconst BASE_TIDDLER_PATH = `$:/plugins/${PLUGIN_NAME}`;\r\nconst PLUGIN_SETTINGS_DATA = `${BASE_TIDDLER_PATH}/settings-data`;\r\nconst ENABLE_LOGGING_FIELD = \&quot;enable-logging?\&quot;;\r\nconst ENABLE_SAVER_FIELD = \&quot;enable-saver?\&quot;;\r\nconst SAVER_STYLE_FIELD = \&quot;save-style\&quot;;\r\nconst YES = \&quot;yes\&quot;;\r\nconst UNIQUE_PLUGIN_ID = \&quot;QqiTNHy4qkN9TtIYbd5i\&quot;;\r\nlet logDebug = console.log;\r\nconst setupLogging = (wiki) =&gt; {\r\n    try {\r\n        const tiddler = wiki.getTiddler(PLUGIN_SETTINGS_DATA);\r\n        if (!tiddler) {\r\n            return;\r\n        }\r\n        const fieldValue = tiddler.getFieldString(ENABLE_LOGGING_FIELD);\r\n        if (fieldValue === YES) {\r\n            logDebug = console.log;\r\n        }\r\n        else {\r\n            logDebug = () =&gt; { };\r\n        }\r\n    }\r\n    catch (err) {\r\n        console.error(\&quot;Could not initialize logging due to error: %o\&quot;, err);\r\n    }\r\n};\r\nconst isEnabled = (wiki) =&gt; {\r\n    return wiki.getTiddler(PLUGIN_SETTINGS_DATA).getFieldString(ENABLE_SAVER_FIELD) === YES;\r\n};\r\nfunction getSaverStyle(wiki) {\r\n    try {\r\n        const maybeSaverStyle = wiki.getTiddler(PLUGIN_SETTINGS_DATA).getFieldString(SAVER_STYLE_FIELD);\r\n        if (isSaverStyle(maybeSaverStyle)) {\r\n            return maybeSaverStyle;\r\n        }\r\n        else {\r\n            logDebug(\&quot;Input saver style [%s] is not recognized, using default of SingleFile.\&quot;, maybeSaverStyle);\r\n            return SaverStyle.SingleFile;\r\n        }\r\n    }\r\n    catch (err) {\r\n        console.error(\&quot;Error checking if versioning is enabled, using single file style.\&quot;);\r\n        console.error(err);\r\n        return SaverStyle.SingleFile;\r\n    }\r\n}\r\n;\r\nconst isServedFromFS = () =&gt; {\r\n    try {\r\n        const protocol = window.location.protocol;\r\n        logDebug(\&quot;TiddlyWiki location protocol is [%o]\&quot;, protocol);\r\n        return protocol.startsWith;\r\n    }\r\n    catch (err) {\r\n        logDebug(\&quot;Error occurred trying to determine protocol for TiddlyWiki: %o\&quot;, err);\r\n        logDebug(\&quot;Assuming that it is file:/ to maximimize security\&quot;);\r\n    }\r\n};\r\n/**\r\n * Converts an IDBRequest to an equivalent Promise.\r\n */\r\nfunction idbRequestToPromise(request) {\r\n    return new Promise((resolve, reject) =&gt; {\r\n        request.onsuccess = () =&gt; {\r\n            try {\r\n                resolve(request.result);\r\n            }\r\n            catch (err) {\r\n                // This is possible only on incorrect API usage, but just want to be safe to avoid\r\n                // infinite loops.\r\n                reject(err);\r\n            }\r\n        };\r\n        request.onerror = () =&gt; {\r\n            reject(request.error);\r\n        };\r\n    });\r\n}\r\n/**\r\n * Return a Promise which will resolve when the transaction succeeds or\r\n * reject when it faild and/or aborts.\r\n */\r\nconst getTransactionCommitPromise = (transaction) =&gt; {\r\n    return new Promise((resolve, reject) =&gt; {\r\n        let errorSeen = false;\r\n        transaction.oncomplete = () =&gt; resolve();\r\n        const errorHandler = () =&gt; {\r\n            if (!errorSeen) {\r\n                errorSeen = true;\r\n                reject(transaction.error || \&quot;Transaction aborted/failed\&quot;);\r\n            }\r\n        };\r\n        transaction.onerror = errorHandler;\r\n        transaction.onabort = errorHandler;\r\n    });\r\n};\r\nconst DB_VERSION = 1;\r\nconst DB_NAME = `FileHandles-${UNIQUE_PLUGIN_ID}`;\r\nconst DB_HANDLE_OBJECT_STORE_NAME = \&quot;FileHandles\&quot;;\r\nconst CURRENT_FILE_HANDLE_NAME = \&quot;CURRENT_FILE_HANDLE\&quot;;\r\nconst IDB_READWRITE = \&quot;readwrite\&quot;;\r\nconst IDB_READONLY = \&quot;readonly\&quot;;\r\nconst IDB_RELAXED = \&quot;relaxed\&quot;;\r\nconst tryCreateHandleStore = async () =&gt; {\r\n    if (!window.indexedDB) {\r\n        const message = \&quot;Cannot save file handle across browser sessions because your browser does not support IndexedDB.\&quot;;\r\n        logDebug(message);\r\n        return Promise.reject(message);\r\n    }\r\n    else if (isServedFromFS()) {\r\n        const message = \&quot;It is not secure to save sensitive data to IndexedDB when using the file:/ protocol.\&quot;;\r\n        logDebug(message);\r\n        logDebug(\&quot;This is a security issue because anything served via file:/ share a single origin in Chromium browsers.\&quot;);\r\n        logDebug(\&quot;See https://bugs.chromium.org/p/chromium/issues/detail?id=1202597#c3 for details.\&quot;);\r\n        return Promise.reject(message);\r\n    }\r\n    logDebug(\&quot;Browser supports IndexedDB so will attempt to create/retrieve a DB for storing a file handle.\&quot;);\r\n    const dbOpenRequest = window.indexedDB.open(DB_NAME, DB_VERSION);\r\n    dbOpenRequest.onupgradeneeded = event =&gt; {\r\n        logDebug(\&quot;Initializing file handle DB since received event %o\&quot;, event);\r\n        const db = dbOpenRequest.result;\r\n        // Don't specify keyPath or autoIncrement so that keys are stored separately from values which lets\r\n        // us store any kind of value.\r\n        const store = db.createObjectStore(DB_HANDLE_OBJECT_STORE_NAME);\r\n        logDebug(\&quot;Successfully created store %o/%o\&quot;, DB_NAME, DB_HANDLE_OBJECT_STORE_NAME);\r\n        return store;\r\n    };\r\n    try {\r\n        const db = await idbRequestToPromise(dbOpenRequest);\r\n        logDebug(\&quot;Successfully opened database for storing file handles %o.\&quot;, db);\r\n        return db;\r\n    }\r\n    catch (err) {\r\n        logDebug(\&quot;Could not open database for storing file handles: %o\&quot;, err);\r\n        throw err;\r\n    }\r\n};\r\nconst requestFileHandle = async () =&gt; {\r\n    for (let i = 0; i &lt; 2; i++) {\r\n        const result = await window.showSaveFilePicker({\r\n            types: [{\r\n                    description: \&quot;HTML file\&quot;,\r\n                    accept: {\r\n                        \&quot;text/html\&quot;: [\r\n                            \&quot;.html\&quot;,\r\n                            \&quot;.htm\&quot;\r\n                        ]\r\n                    }\r\n                }]\r\n        });\r\n        logDebug(\&quot;Received file handle: %o\&quot;, result);\r\n        if (result.kind === \&quot;file\&quot;) {\r\n            return result;\r\n        }\r\n        alert(\&quot;File input must be a file, not a directory.\&quot;);\r\n    }\r\n    return await Promise.reject(\&quot;Could not get file for saving.\&quot;);\r\n};\r\nconst getFileHandle = async () =&gt; {\r\n    let transaction;\r\n    let store;\r\n    let db;\r\n    try {\r\n        db = await tryCreateHandleStore();\r\n        transaction = db.transaction([DB_HANDLE_OBJECT_STORE_NAME], IDB_READONLY);\r\n        store = transaction.objectStore(DB_HANDLE_OBJECT_STORE_NAME);\r\n    }\r\n    catch (err) {\r\n        logDebug(\&quot;Could not get handle store due to error, must request file location from user: %o\&quot;, err);\r\n        return await requestFileHandle();\r\n    }\r\n    // store must now be initialized\r\n    const requestAndStoreNewFile = async () =&gt; {\r\n        const fileHandle = await requestFileHandle();\r\n        logDebug(\&quot;Saving file handle %o to object store to avoid requests in the future\&quot;, fileHandle);\r\n        // Don't await this and just let it execute in background since it isn't really that\r\n        // important.\r\n        try {\r\n            // Have to get a new transaction because requestFileHandle puts us in a new event loop.\r\n            transaction = db.transaction([DB_HANDLE_OBJECT_STORE_NAME], IDB_READWRITE);\r\n            store = transaction.objectStore(DB_HANDLE_OBJECT_STORE_NAME);\r\n            idbRequestToPromise(store.put(fileHandle, CURRENT_FILE_HANDLE_NAME)).then(async () =&gt; {\r\n                await getTransactionCommitPromise(transaction);\r\n                logDebug(\&quot;Successfully saved file handle %o to object store.\&quot;, fileHandle);\r\n            }, err =&gt; {\r\n                logDebug(\&quot;Could not save file handle %o to object store (user will have to select file once they refresh): %o\&quot;, fileHandle, err);\r\n            });\r\n        }\r\n        catch (err) {\r\n            logDebug(\&quot;Failed to initate save request for file hande due to error: %o\&quot;, err);\r\n        }\r\n        return fileHandle;\r\n    };\r\n    try {\r\n        const maybeFileHandle = await idbRequestToPromise(store.get(CURRENT_FILE_HANDLE_NAME));\r\n        if (!maybeFileHandle) {\r\n            logDebug(\&quot;No existing file handle found, must request new one\&quot;);\r\n            return await requestAndStoreNewFile();\r\n        }\r\n        // Explicitly request permission to readwrite to avoid permissions issues later on.\r\n        // TODO: verify window.location matches before using file in case it has been moved.\r\n        logDebug(\&quot;Found a previous file handle so try to avoid duplicate requests to user for file location %o\&quot;, maybeFileHandle);\r\n        logDebug(\&quot;Requesting permission for RW on file object.\&quot;);\r\n        const status = await maybeFileHandle.requestPermission({ mode: IDB_READWRITE }); // These strings happen to be the same for IDB and files.\r\n        logDebug(\&quot;Requesting permission for RW on file returned status: %o\&quot;, status);\r\n        if (status !== \&quot;granted\&quot;) {\r\n            throw Error(`RW on file was not granted, status of the permission is: [${status}]`);\r\n        }\r\n        logDebug(\&quot;Successfully obtained RW permission on file object.\&quot;);\r\n        return maybeFileHandle;\r\n    }\r\n    catch (err) {\r\n        logDebug(\&quot;Could not get previous handle, must request a new one due to error: %o\&quot;, err);\r\n        return await requestAndStoreNewFile();\r\n    }\r\n};\r\nclass FileSystemSaver {\r\n    constructor(wiki) {\r\n        this.wiki = wiki;\r\n        this.info = {\r\n            name: PLUGIN_NAME,\r\n            priority: 100000,\r\n            capabilities: [SaverCapability.Save, SaverCapability.AutoSave]\r\n        };\r\n        this.initError = null;\r\n        setupLogging(wiki);\r\n        logDebug(\&quot;Constructing a FileSystemSaver\&quot;);\r\n    }\r\n    userInteractionInit() {\r\n        if (!this.fileHandle) {\r\n            logDebug(\&quot;Attempting to get file handle.\&quot;);\r\n            this.fileHandle = getFileHandle();\r\n            this.fileHandle.catch(err =&gt; {\r\n                problemEncountered = true;\r\n                this.initError = err;\r\n                logDebug(\&quot;Could not get file handle due to error: %o\&quot;, err);\r\n            });\r\n        }\r\n    }\r\n    save(text, method, callback) {\r\n        setupLogging(this.wiki);\r\n        if (!isEnabled(this.wiki)) {\r\n            logDebug(\&quot;Not saving since this saver is not enabled.\&quot;);\r\n            return false;\r\n        }\r\n        logDebug(\&quot;Saving with method %o\&quot;, method);\r\n        this.userInteractionInit();\r\n        if (this.initError !== null) {\r\n            logDebug(\&quot;Encountered init, can't save\&quot;);\r\n            callback(this.initError);\r\n            return false;\r\n        }\r\n        this.fileHandle.then(async (handle) =&gt; {\r\n            logDebug(\&quot;Creating writable...\&quot;);\r\n            const writable = await handle.createWritable();\r\n            logDebug(\&quot;Created writable\&quot;);\r\n            try {\r\n                await writable.write(text);\r\n                logDebug(\&quot;Wrote data successfully\&quot;);\r\n            }\r\n            finally {\r\n                await writable.close();\r\n                logDebug(\&quot;Closed writable\&quot;);\r\n            }\r\n        }).then(() =&gt; {\r\n            logDebug(\&quot;Successfully saved to file system\&quot;);\r\n            callback(null);\r\n        }, err =&gt; {\r\n            problemEncountered = true;\r\n            logDebug(\&quot;Encountered error while saving: %o\&quot;, err);\r\n            callback(`Encountered error while saving to file system: [${err}]`);\r\n        });\r\n        return true;\r\n    }\r\n}\r\n// Has one parameter, wiki if necessary\r\nconst canSave = (handler) =&gt; {\r\n    try {\r\n        setupLogging(handler.wiki);\r\n        return isEnabled(handler.wiki) &amp;&amp; (!!window.showOpenFilePicker) &amp;&amp; window.isSecureContext &amp;&amp; !problemEncountered;\r\n    }\r\n    catch (err) {\r\n        logDebug(err);\r\n        return false;\r\n    }\r\n};\r\n// Also has access to wiki if necessary\r\nconst create = (wiki) =&gt; {\r\n    return new FileSystemSaver(wiki);\r\n};\r\nmodule.exports = {\r\n    canSave,\r\n    create\r\n};\r\n&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;,
+            &quot;module-type&quot;: &quot;saver&quot;
+        },
+        &quot;$:/plugins/slaymaker1907/browser-nativesaver/settings-data&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/slaymaker1907/browser-nativesaver/settings-data&quot;,
+            &quot;enable-logging?&quot;: &quot;no&quot;,
+            &quot;enable-saver?&quot;: &quot;yes&quot;
+        },
+        &quot;$:/plugins/slaymaker1907/browser-nativesaver/settings&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/slaymaker1907/browser-nativesaver/settings&quot;,
+            &quot;tags&quot;: &quot;$:/tags/ControlPanel/Saving&quot;,
+            &quot;caption&quot;: &quot;HTML Native File System Saver&quot;,
+            &quot;text&quot;: &quot;&lt;$checkbox tiddler=\&quot;$:/plugins/slaymaker1907/browser-nativesaver/settings-data\&quot; field=\&quot;enable-saver?\&quot; checked=\&quot;yes\&quot; unchecked=\&quot;no\&quot;\r\n    default=\&quot;yes\&quot;&gt; Enable saver?&lt;/$checkbox&gt;\n\n&lt;$checkbox tiddler=\&quot;$:/plugins/slaymaker1907/browser-nativesaver/settings-data\&quot; field=\&quot;enable-logging?\&quot; checked=\&quot;yes\&quot; unchecked=\&quot;no\&quot; default=\&quot;no\&quot;&gt; Enable debug logging?&lt;/$checkbox&gt;\n\n&lt;$select tiddler=\&quot;$:/plugins/slaymaker1907/browser-nativesaver/settings-data\&quot; field=\&quot;save-style\&quot; default=\&quot;single-file\&quot;&gt;\r\n    &lt;option value=\&quot;single-file\&quot;&gt;Single file&lt;/option&gt;\r\n    &lt;option value=\&quot;single-file-version-backup\&quot;&gt;Single file with versioned backups (all stored in a single directory)&lt;/option&gt;\r\n&lt;/$select&gt;\n\n&lt;$reveal type=\&quot;match\&quot; state=\&quot;$:/plugins/slaymaker1907/browser-nativesaver/settings-data!!save-style\&quot; text=\&quot;single-file-version-backup\&quot;&gt;\r\n    Wiki file name: &lt;$edit-text tiddler=\&quot;$:/plugins/slaymaker1907/browser-nativesaver/settings-data\&quot; field=\&quot;wiki-file-name\&quot; /&gt;\r\n&lt;/$reveal&gt;\n\n&lt;!--- Hacky solution to clear database for the time being ---&gt;\r\n&lt;button onclick=\&quot;window.indexedDB.deleteDatabase('QqiTNHy4qkN9TtIYbd5i');\&quot;&gt;Reset file save location (requires reload)&lt;/button&gt;\r\n&quot;
+        }
+    }
+}</pre>
+</div>
+<div created="20210516223300552" enable-logging?="no" enable-saver?="yes" modified="20210516223314796" save-style="single-file-version-backup" title="$:/plugins/slaymaker1907/browser-nativesaver/settings-data" wiki-file-name="">
+<pre></pre>
+</div>
+<div created="20210310044800315" modified="20210516223338585" title="$:/SiteTitle">
 <pre>My TestTiddlyWiki</pre>
 </div>
 <div created="20210310053958152" modified="20210310054117801" title="$:/state/sidebar">
@@ -10092,19 +10136,19 @@ Error message and password prompt
 <div created="20210310044621417" modified="20210310044938012" title="$:/state/tab-1749438307">
 <pre>$:/core/ui/ControlPanel/Saving</pre>
 </div>
-<div created="20210310044622581" modified="20210310045007354" title="$:/state/tab-2065006209">
-<pre>$:/core/ui/ControlPanel/Saving/GitHub</pre>
+<div created="20210310044622581" modified="20210516223257061" title="$:/state/tab-2065006209">
+<pre>$:/plugins/slaymaker1907/browser-nativesaver/settings</pre>
 </div>
 <div created="20210310053933025" modified="20210310053943255" title="$:/state/tab/moresidebar-1850697562">
 <pre>$:/core/ui/MoreSideBar/All</pre>
 </div>
-<div created="20210310053848095" modified="20210511003836150" title="$:/state/tab/sidebar--595412856">
+<div created="20210310053848095" modified="20210516223544663" title="$:/state/tab/sidebar--595412856">
 <pre>$:/core/ui/SideBar/Recent</pre>
 </div>
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div list="[[How To: Set Up SSH]] GettingStarted" title="$:/StoryList">
+<div created="20210516223416232" list="[[test tiddler]] [[iPad test]] [[New page test with file saver API]]" modified="20210516223549564" title="$:/StoryList">
 <pre></pre>
 </div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="$:/themes/tiddlywiki/vanilla" description="Emphasises individual tiddlers" name="Snow White" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/snowwhite" type="application/json" version="5.1.23">
@@ -10216,7 +10260,7 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20210511021652554" modified="20210511021806616" tags="" title="How To: Set Up SSH">
+<div created="20210511021652554" modified="20210516223438825" tags="" title="HowTo: Set Up SSH">
 <pre>```bash
 ## GENERATE KEY ON LOCAL MACHINE ##
 
@@ -10272,11 +10316,14 @@ For convenience, set up your SSH config file as well. A good example is [[zircon
 <div created="20210511003848406" modified="20210511003942188" tags="Ipad" title="New from iPad">
 <pre>Testing writing from Quine 2</pre>
 </div>
+<div created="20210516223505474" modified="20210516223514651" tags="" title="New page test with file saver API">
+<pre></pre>
+</div>
 <div created="20210511015743564" modified="20210511015802496" tags="" title="New Tiddler">
 <pre>New testing with updated email</pre>
 </div>
-<div created="20210310044945121" modified="20210310044952076" tags="" title="test tiddler">
-<pre></pre>
+<div created="20210310044945121" modified="20210516223632980" tags="" title="test tiddler">
+<pre>This a test using the new nativesaver via Edge.</pre>
 </div>
 <div created="20210310045649431" modified="20210310045653533" tags="" title="testing new">
 <pre></pre>
